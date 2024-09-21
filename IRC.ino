@@ -4,21 +4,18 @@
 
 // Define the servo pins
 const byte servoPin[] = {18 , 19 , 21 , 23};
-
-Servo servo1;
-Servo servo2;
-Servo servo3;
-Servo servo4;
-
-int servoSelected = 1;
-
+Servo servo[4];
 byte angle[] = {0 , 0 , 0 , 0};
 
+byte servoSelected = 0;
+
+
+
 void setup() {
-  servo1.attach(servoPin[0]);
-  servo2.attach(servoPin[1]);
-  servo3.attach(servoPin[2]);
-  servo4.attach(servoPin[3]);
+  servo[0].attach(servoPin[0]);
+  servo[1].attach(servoPin[1]);
+  servo[2].attach(servoPin[2]);
+  servo[3].attach(servoPin[3]);
 
   pinMode(LED_BUILTIN, OUTPUT);
   
@@ -31,25 +28,25 @@ void loop() {
 
   if (GamePad.isUpPressed()) {
     Serial.println("Selected servo 1");
-    servoSelected = 1;
+    servoSelected = 0;
     blink(1);
   }
 
   if (GamePad.isDownPressed()) {
     Serial.println("Selected servo 2");
-    servoSelected = 2;
+    servoSelected = 1;
     blink(2);
   }
 
   if (GamePad.isLeftPressed()) {
     Serial.println("Selected servo 3");
-    servoSelected = 3;
+    servoSelected = 2;
     blink(3);
   }
 
   if (GamePad.isRightPressed()) {
     Serial.println("Selected servo 4");
-    servoSelected = 4;
+    servoSelected = 3;
     blink(4);
   }
 
@@ -61,24 +58,16 @@ void loop() {
     move(true);
   }
 
-  if (GamePad.isSquarePressed())
-  {
+  if (GamePad.isSquarePressed()) {
     Serial.print("Square");
   }
 
-  if (GamePad.isCirclePressed())
-  {
+  if (GamePad.isCirclePressed()) {
     Serial.print("Circle");
   }
 
-    if (GamePad.isStartPressed())
-  {
-    Serial.print("Start");
-  }
-
-  if (GamePad.isSelectPressed())
-  {
-    Serial.print("Select");
+  if (GamePad.isSelectPressed()) {
+    Serial.println("Select");
   }
   Serial.print('\t');
 
@@ -86,64 +75,18 @@ void loop() {
 }
 
 void move(bool up) {
-  if(servoSelected == 1) {
-    if(angle[0] == 180 && up) {
-      angle[0] = 0;
-    } else if(angle[0] == 0 && (!up)) {
-      angle[0] = 180;
-    }
-    if(up) {
-      servo1.write(++angle[0]);
-      delay(50);
-    } else {
-      servo1.write(--angle[0]);
-      delay(50);
-    }
-  }
 
-  if(servoSelected == 2) {
-    if(angle[1] == 180 && up) {
-      angle[1] = 0;
-    } else if(angle[1] == 0 && (!up)) {
-      angle[1] = 180;
-    }
-    if(up) {
-      servo2.write(++angle[1]);
-      delay(50);
-    } else {
-      servo2.write(--angle[1]);
-      delay(50);
-    }
+  if(angle[servoSelected] == 180 && up) {
+      angle[servoSelected] = 0;
+    } else if(angle[servoSelected] == 0 && (!up)) {
+      angle[servoSelected] = 180;
   }
-
-  if(servoSelected == 3) {
-    if(angle[2] == 180 && up) {
-      angle[2] = 0;
-    } else if(angle[2] == 0 && (!up)) {
-      angle[2] = 180;
-    }
-    if(up) {
-      servo3.write(++angle[2]);
-      delay(50);
-    } else {
-      servo3.write(--angle[2]);
-      delay(50);
-    }
-  }
-
-  if(servoSelected == 4) {
-    if(angle[3] == 180 && up) {
-      angle[3] = 0;
-    } else if(angle[3] == 0 && (!up)) {
-      angle[3] = 180;
-    }
-    if(up) {
-      servo4.write(++angle[3]);
-      delay(50);
-    } else {
-      servo4.write(--angle[3]);
-      delay(50);
-    }
+  if(up) {
+    servo[servoSelected].write(++angle[servoSelected]);
+    delay(50);
+  } else {
+    servo[servoSelected].write(--angle[servoSelected]);
+    delay(50);
   }
 }
 
