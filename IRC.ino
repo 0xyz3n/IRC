@@ -1,22 +1,27 @@
 #include <DabbleESP32.h>
 #include<ESP32Servo.h>
 
+// Movement
+const byte motorPin_fwd[] = {34 , 35 , 32 , 33};
+const byte motorPin_bkwrd[] = {25 , 26 , 14 , 12};
 
-// Define the servo pins
+
+// Arm 
 const byte servoPin[] = {18 , 19 , 21 , 23};
 Servo servo[4];
 byte angle[] = {0 , 0 , 0 , 0};
-
 byte servoSelected = 0;
+const uint64_t servoDelay[] = {50 , 50 , 50 , 50};
 
-
+// if true , in  movement mode
+bool mode = false;
 
 void setup() {
-  servo[0].attach(servoPin[0]);
-  servo[1].attach(servoPin[1]);
-  servo[2].attach(servoPin[2]);
-  servo[3].attach(servoPin[3]);
-
+  for(int i = 0; i < 4; i++) {
+    servo[0].attach(servoPin[0]);
+    pinMode(motorPin_fwd[0], OUTPUT);
+    pinMode(motorPin_bkwrd[0], OUTPUT);
+  }
   pinMode(LED_BUILTIN, OUTPUT);
   
   Serial.begin(115200);      // make sure your Serial Monitor is also set at this baud rate.
@@ -28,8 +33,13 @@ void loop() {
 
   if (GamePad.isUpPressed()) {
     Serial.println("Selected servo 1");
-    servoSelected = 0;
-    blink(1);
+    if(mode) {
+
+    } else {
+      servoSelected = 0;
+      blink(1);
+    }
+    
   }
 
   if (GamePad.isDownPressed()) {
@@ -83,10 +93,10 @@ void move(bool up) {
   }
   if(up) {
     servo[servoSelected].write(++angle[servoSelected]);
-    delay(50);
+    delay(servoDelay[servoSelected]);
   } else {
     servo[servoSelected].write(--angle[servoSelected]);
-    delay(50);
+    delay(servoDelay[servoSelected]);
   }
 }
 
