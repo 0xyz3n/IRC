@@ -151,6 +151,7 @@ void moveServo(bool up) {
     servo[servoSelected].write(--angle[servoSelected]);
     delay(servoDelay[servoSelected]);
   }
+  Serial.println("Angle of Servo " + String(servoSelected + 1) + " :" + String(angle[servoSelected]));
 }
 
 void blink(uint8_t n , uint16_t d) {
