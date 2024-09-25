@@ -27,10 +27,12 @@ bool mode = false;
 void setup() {
   for (int i = 0; i < 4; i++) {
     servo[i].attach(servoPin[i]);
-
-    pinMode(motorPin_fwd[i], OUTPUT);
-    pinMode(motorPin_bkwrd[i], OUTPUT);
-    pinMode(motorPin_speed[i], OUTPUT);
+    
+    if(i < 2) {
+      pinMode(motorPin_fwd[i], OUTPUT);
+      pinMode(motorPin_bkwrd[i], OUTPUT);
+      pinMode(motorPin_speed[i], OUTPUT);
+    }
   }
   pinMode(LED_BUILTIN, OUTPUT);
 
