@@ -1,22 +1,30 @@
 #include <DabbleESP32.h>
 #include <ESP32Servo.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
 // Setting PWM properties
-const uint16_t freq[] = {30000 , 30000} ;
-const byte pwmChannel[] = {0 , 1};
-const byte resolution = 8;
-const byte dutyCycle = 200;
+// const uint16_t freq[] = {30000 , 30000} ;
+// const byte pwmChannel[] = {0 , 1};
+// const byte resolution = 8;
+// const byte dutyCycle = 200;
 
 // Movement
-const byte motorPin_fwd[] = {16 , 17};   // IN Pins
-const byte motorPin_bkwrd[] = { 25, 26}; // IN  pins
-const byte motorPin_speed[] = {14 , 12}; // ENA Pins for Speed
+const byte motorPin_fwd[] = {16 , 5};   // IN Pins
+const byte motorPin_bkwrd[] = { 17, 18}; // IN  pins
+//const byte motorPin_speed[] = {14 , 12}; // ENA Pins for Speed
 const uint8_t movementDelay = 250; // Determines a minimum delay upto which robot will move for a single input
 
 
 // Arm
-const byte servoPin[] = { 18, 19, 21, 23 };
-Servo servo[4];
+
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
+#define SERVOMIN  150 // This is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  600 // This is the 'maximum' pulse length count (out of 4096)
+#define SERVO_FREQ 60 // Analog servos run at ~60 Hz updates
+
+const byte servoPin[] = { 0 , 4 , 8 , 12 }; // Pins of PCA9685 
 byte angle[] = { 0, 0, 0, 0 };
 byte servoSelected = 0;
 const uint16_t servoDelay[] = { 50, 50, 50, 50 };
@@ -25,21 +33,21 @@ const uint16_t servoDelay[] = { 50, 50, 50, 50 };
 bool mode = false;
 
 void setup() {
-  for (int i = 0; i < 4; i++) {
-    servo[i].attach(servoPin[i]);
-
+  for (int i = 0; i < 2; i++) {
     pinMode(motorPin_fwd[i], OUTPUT);
     pinMode(motorPin_bkwrd[i], OUTPUT);
-    pinMode(motorPin_speed[i], OUTPUT);
+    //pinMode(motorPin_speed[i], OUTPUT);
   }
   pinMode(LED_BUILTIN, OUTPUT);
 
+  processMovement(-1);
 
-  ledcSetup(pwmChannel[0], freq[0], resolution);
-  ledcSetup(pwmChannel[1], freq[1], resolution);
 
-  ledcAttachPin(motorPin_speed[0], pwmChannel[0]);
-  ledcAttachPin(motorPin_speed[1], pwmChannel[1]);
+  //ledcSetup(pwmChannel[0], freq[0], resolution);
+  //ledcSetup(pwmChannel[1], freq[1], resolution);
+
+  //ledcAttachPin(motorPin_speed[0], pwmChannel[0]);
+  //ledcAttachPin(motorPin_speed[1], pwmChannel[1]);
 
   Serial.begin(115200);           // make sure your Serial Monitor is also set at this baud rate.
   Dabble.begin("ESPController");  //set bluetooth name of your device
@@ -140,15 +148,15 @@ void loop() {
 void moveServo(bool up) {
 
   if (angle[servoSelected] == 180 && up) {
-    angle[servoSelected] = 0;
+    return;
   } else if (angle[servoSelected] == 0 && (!up)) {
-    angle[servoSelected] = 180;
+    return;
   }
   if (up) {
-    servo[servoSelected].write(++angle[servoSelected]);
+    pwm.setPWM(servoPin[servoSelected] , 0 ,map(++angle[servoSelected] , 0 , 180 , SERVOMIN , SERVOMAX));
     delay(servoDelay[servoSelected]);
   } else {
-    servo[servoSelected].write(--angle[servoSelected]);
+    pwm.setPWM(servoPin[servoSelected] , 0 ,map(--angle[servoSelected] , 0 , 180 , SERVOMIN , SERVOMAX));
     delay(servoDelay[servoSelected]);
   }
   Serial.println("Angle of Servo " + String(servoSelected + 1) + " :" + String(angle[servoSelected]));
@@ -172,25 +180,25 @@ void processMovement(byte dirn) {
     case 0 :  Serial.println("Move forward");
               moveMotor(0 , 1);
               moveMotor(1 , 1);
-              changeSpeed(255, 255);
+              //changeSpeed(255, 255);
               break;
 
     case 1 :  Serial.println("Move backward");
               moveMotor(0 , -1);
               moveMotor(1 , -1);
-              changeSpeed(255, 255);
+              //changeSpeed(255, 255);
               break;
 
     case 2 :  Serial.println("Move left");
               moveMotor(0 , 1);
               moveMotor(1 , 0);
-              changeSpeed(255, 255);
+              //changeSpeed(255, 255);
               break;
               
     case 3 :  Serial.println("Move right");
               moveMotor(0 , 0);
               moveMotor(1 , 1);
-              changeSpeed(255, 255);
+              //changeSpeed(255, 255);
               break;
               
     default : Serial.println("STOP");
@@ -220,7 +228,7 @@ void moveMotor(byte motor , byte direction) {
   }
 }
 
-void changeSpeed(uint8_t speed1 , uint8_t speed2) {
-  ledcWrite(motorPin_speed[0], speed1);
-  ledcWrite(motorPin_speed[1], speed2);
-}
+// void changeSpeed(uint8_t speed1 , uint8_t speed2) {
+//   ledcWrite(motorPin_speed[0], speed1);
+//   ledcWrite(motorPin_speed[1], speed2);
+// }
