@@ -3,12 +3,6 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
-// Setting PWM properties
-// const uint16_t freq[] = {30000 , 30000} ;
-// const byte pwmChannel[] = {0 , 1};
-// const byte resolution = 8;
-// const byte dutyCycle = 200;
-
 // Movement
 const byte motorPin_fwd[] = {16 , 5};   // IN Pins
 const byte motorPin_bkwrd[] = { 17, 18}; // IN  pins
@@ -31,6 +25,7 @@ const uint16_t servoDelay[] = { 50, 50, 50, 50 };
 
 // if true , in  movement mode
 bool mode = false;
+bool debug = true;
 
 void setup() {
   for (int i = 0; i < 2; i++) {
@@ -54,15 +49,13 @@ void setup() {
 }
 
 void loop() {
+  int movement = -1;
   Dabble.processInput();
 
   if (GamePad.isUpPressed()) {
     
     if (mode) {
-      blink(10 , 25);
-      processMovement(0);
-      delay(movementDelay);
-      processMovement(-1);
+      movement = 0;
     } else {
       Serial.println("Selected servo 1");
       servoSelected = 0;
@@ -72,10 +65,7 @@ void loop() {
 
   if (GamePad.isDownPressed()) {
     if (mode) {
-      blink(10 , 25);
-      processMovement(1);
-      delay(movementDelay);
-      processMovement(-1);
+      movement = 1;
     } else {
     Serial.println("Selected servo 3");
     servoSelected = 2;
@@ -85,10 +75,7 @@ void loop() {
 
   if (GamePad.isLeftPressed()) {
     if (mode) {
-      blink(10 , 25);
-      processMovement(2);
-      delay(movementDelay);
-      processMovement(-1);
+      movement = 2;
     } else {
     Serial.println("Selected servo 4");
     servoSelected = 3;
@@ -98,10 +85,7 @@ void loop() {
 
   if (GamePad.isRightPressed()) {
     if (mode) {
-      blink(10 , 25);
-      processMovement(3);
-      delay(movementDelay);
-      processMovement(-1);
+      movement = 3;
     } else {
     Serial.println("Selected servo 2");
     servoSelected = 1;
@@ -142,6 +126,13 @@ void loop() {
     blink(10 , 25);
     processMovement(-1);
     }
+  }
+
+  processMovement(movement);
+
+  if(debug && mode) {
+      Serial.println(String(digitalRead(16)) + " , " + String(digitalRead(17)) + " , " + String(digitalRead(5)) + " , " + String(digitalRead(18)));
+      delay(700);
   }
 }
 
@@ -184,8 +175,8 @@ void processMovement(byte dirn) {
               break;
 
     case 1 :  Serial.println("Move backward");
-              moveMotor(0 , -1);
-              moveMotor(1 , -1);
+              moveMotor(0 , 2);
+              moveMotor(1 , 2);
               //changeSpeed(255, 255);
               break;
 
@@ -219,9 +210,10 @@ void moveMotor(byte motor , byte direction) {
               digitalWrite(motorPin_bkwrd[motor], LOW);
               break;
 
-    case -1 : digitalWrite(motorPin_fwd[motor], LOW);
+    case 2 :  digitalWrite(motorPin_fwd[motor], LOW);
               digitalWrite(motorPin_bkwrd[motor], HIGH);
               break;
+
     default : digitalWrite(motorPin_fwd[motor],LOW);
               digitalWrite(motorPin_bkwrd[motor], LOW);
               break;
