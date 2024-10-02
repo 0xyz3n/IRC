@@ -26,7 +26,7 @@ byte servo = 0;
 
 // if true , in  movement mode
 bool mode = false;
-bool debug = true;
+bool debug = false;
 
 void setup() {
   for (int i = 0; i < 2; i++) {
@@ -143,10 +143,16 @@ void loop() {
 
 void moveServo(bool up) {
 
-if((value[servo] == max_val[servo]) && up) {
-    return;
+  if((value[servo] == max_val[servo]) && up) {
+    if(debug) {
+      Serial.println("Servo " + String(servo + 1) + " reached its max value.");
+    }
+    return; 
   }
   if((value[servo] == min_val[servo]) && (!up)) {
+    if(debug) {
+      Serial.println("Servo " + String(servo + 1) + " reached its min value.");
+    }
     return;
   }
   if(up) {++value[servo];} else {--value[servo];}
@@ -173,22 +179,22 @@ void blink(uint8_t n , uint16_t d) {
 void processMovement(byte dirn) {
   switch(dirn) {
 
-    case 0 :  Serial.println("Move forward");
+    case 0 :  if(debug) {Serial.println("Move forward");}
               moveMotor(0 , 1);
               moveMotor(1 , 1);
               break;
 
-    case 1 :  Serial.println("Move backward");
+    case 1 :  if(debug) {Serial.println("Move backward");}
               moveMotor(0 , 2);
               moveMotor(1 , 2);
               break;
 
-    case 2 :  Serial.println("Move left");
+    case 2 :  if(debug) {Serial.println("Move left");}
               moveMotor(0 , 1);
               moveMotor(1 , 2);
               break;
               
-    case 3 :  Serial.println("Move right");
+    case 3 :  if(debug) {Serial.println("Move right");}
               moveMotor(0 , 2);
               moveMotor(1 , 1);
               break;
