@@ -32,7 +32,7 @@ This project utilizes an ESP32 microcontroller to control a robotic arm and a tw
 - Servo driver connected to esp32 via SCL & SDA pin (communicstion between ESP32 & servo Driver done via I2C protocol)
 
 > [!CAUTION]
-> Never give 5v supply to 3.3v pin as it is not connected with the built-in voltage regulator.
+> Never give 5v supply to 3.3v pin, otherwise you will end up frying it
 
 ## Code Explanation
 ### Constants and Global Variables
