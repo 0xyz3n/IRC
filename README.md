@@ -1,4 +1,9 @@
 # IRC
+
+> [!NOTE]
+> This repository is archived and is no longer actively maintained, as our team did not qualify for subsequent rounds of the competition. 
+>
+> Feel free to explore, fork, and utilize the code provided here for your own projects. I hope it will serve as a valuable resource for the robotics community. 
  
 ## Libraries Used
 - [DabbleESP32](https://github.com/STEMpedia/DabbleESP32)
